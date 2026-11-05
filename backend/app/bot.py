@@ -22,18 +22,18 @@ async def main():
 
     @dp.message(Command("start"))
     async def start(message: Message):
-        await message.answer("سلام! لینک عمومی ویدئو یا صدا را بفرست تا دانلود شود.\\nدستورها: /help ، /status و /cancel شناسه")
+        await message.answer("سلام! لینک عمومی ویدئو یا صدا را بفرست تا دانلود شود.\nدستورها: /help ، /status و /cancel شناسه")
 
     @dp.message(Command("help"))
     async def help_text(message: Message):
-        await message.answer("لینک عمومی از سایت‌های پشتیبانی‌شده بفرست. محتوای خصوصی، پولی، نیازمند ورود یا DRM پشتیبانی نمی‌شود.\\n/status وضعیت درخواست‌ها\\n/cancel شناسه لغو درخواست")
+        await message.answer("لینک عمومی از سایت‌های پشتیبانی‌شده بفرست. محتوای خصوصی، پولی، نیازمند ورود یا DRM پشتیبانی نمی‌شود.\n/status وضعیت درخواست‌ها\n/cancel شناسه لغو درخواست")
 
     @dp.message(Command("status"))
     async def status(message: Message):
         async with SessionLocal() as db:
             query = select(DownloadTask).where(DownloadTask.telegram_user_id == message.from_user.id).order_by(desc(DownloadTask.created_at)).limit(5)
             rows = list((await db.scalars(query)).all())
-        await message.answer("هنوز درخواستی ثبت نکرده‌ای." if not rows else "آخرین درخواست‌ها:\\n" + "\\n".join(f"{row.id[:8]} | {row.status}" for row in rows))
+        await message.answer("هنوز درخواستی ثبت نکرده‌ای." if not rows else "آخرین درخواست‌ها:\n" + "\n".join(f"{row.id} | {row.status}" for row in rows))
 
     @dp.message(Command("cancel"))
     async def cancel(message: Message):
@@ -68,7 +68,7 @@ async def main():
         except Exception as exc:
             await message.answer(str(getattr(exc, "detail", "ثبت درخواست ناموفق بود.")))
             return
-        await message.answer(f"درخواست ثبت شد.\\nشناسه: {task.id}\\nوضعیت: در صف")
+        await message.answer(f"درخواست ثبت شد.\nشناسه: {task.id}\nوضعیت: در صف")
 
     try:
         await dp.start_polling(bot)
