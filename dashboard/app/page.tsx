@@ -67,6 +67,21 @@ export default function Home() {
     catch (error) { setNotice(error instanceof Error ? error.message : "لغو درخواست ناموفق بود"); }
   }
 
+  async function downloadTask(id: string) {
+    try {
+      const response = await fetch("/api/tasks/" + id + "/file", { headers: { "X-Dashboard-Token": token }, cache: "no-store" });
+      if (!response.ok) throw new Error("فایل دیگر در دسترس نیست.");
+      const objectUrl = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = id;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "دریافت فایل ناموفق بود");
+    }
+  }
+
   if (!saved) return <main className="login"><section className="login-card"><div className="logo">G</div><p className="eyebrow">GHAEM / CONTROL ROOM</p><h1>ورود به پنل مدیریت</h1><p className="muted">توکن دسترسی پنل را وارد کن. مقدار آن فقط در نشست همین مرورگر ذخیره می‌شود.</p><form onSubmit={login}><input type="password" value={token} onChange={(e) => setToken(e.target.value)} placeholder="Dashboard access token" required /><button className="primary">ورود به پنل</button></form></section></main>;
 
   return <main className="shell">
@@ -76,7 +91,7 @@ export default function Home() {
     <section className="panel form-panel"><div><p className="eyebrow">NEW JOB</p><h2>ساخت درخواست دانلود</h2><p className="muted">فقط لینک عمومی از دامنه‌های مجاز.</p></div><form onSubmit={createTask}><input dir="ltr" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." required /><button className="primary" disabled={busy}>{busy ? "در حال ثبت..." : "افزودن به صف"}</button></form></section>
     {notice && <div className="notice">{notice}</div>}
     <section className="panel"><div className="section-title"><div><p className="eyebrow">TASK QUEUE</p><h2>درخواست‌های اخیر</h2></div><small>{tasks.length} مورد</small></div><div className="table-wrap"><table><thead><tr><th>وضعیت</th><th>عنوان / لینک</th><th>شناسه</th><th>زمان ثبت</th><th>عملیات</th></tr></thead><tbody>
-      {tasks.map((task) => <tr key={task.id}><td><span className={"status " + task.status}>{labels[task.status] || task.status}</span></td><td className="url"><b>{task.title || "در انتظار پردازش"}</b><a href={task.source_url} target="_blank" rel="noreferrer">{task.source_url}</a>{task.error && <small className="error">{task.error}</small>}</td><td className="mono">{task.id.slice(0, 8)}</td><td>{new Date(task.created_at).toLocaleString("fa-IR")}</td><td>{task.status === "completed" && <a className="download" href={"/api/tasks/" + task.id + "/file"}>دریافت فایل</a>}{["queued", "downloading"].includes(task.status) && <button className="danger" onClick={() => void cancelTask(task.id)}>لغو</button>}</td></tr>)}
+      {tasks.map((task) => <tr key={task.id}><td><span className={"status " + task.status}>{labels[task.status] || task.status}</span></td><td className="url"><b>{task.title || "در انتظار پردازش"}</b><a href={task.source_url} target="_blank" rel="noreferrer">{task.source_url}</a>{task.error && <small className="error">{task.error}</small>}</td><td className="mono">{task.id.slice(0, 8)}</td><td>{new Date(task.created_at).toLocaleString("fa-IR")}</td><td>{task.status === "completed" && <button className="download" onClick={() => void downloadTask(task.id)}>دریافت فایل</button>}{["queued", "downloading"].includes(task.status) && <button className="danger" onClick={() => void cancelTask(task.id)}>لغو</button>}</td></tr>)}
       {tasks.length === 0 && <tr><td colSpan={5} className="empty">هنوز درخواستی ثبت نشده است.</td></tr>}
     </tbody></table></div></section>
     <footer>GHAEM DOWNLOADER <span>نسخهٔ توسعه 0.2.0 · نگه‌داری فایل‌ها: ۲۴ ساعت</span></footer>
