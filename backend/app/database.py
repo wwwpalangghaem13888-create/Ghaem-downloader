@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from uuid import uuid4
-from sqlalchemy import BigInteger, DateTime, Index, String, Text
+from sqlalchemy import BigInteger, DateTime, Index, String, Text, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from app.core.config import get_settings
@@ -29,6 +29,8 @@ class DownloadTask(Base):
 
 async def initialize_database() -> None:
     async with engine.begin() as connection:
+        # Serialize schema initialization when API and worker start together.
+        await connection.execute(text("SELECT pg_advisory_xact_lock(734219847)"))
         await connection.run_sync(Base.metadata.create_all)
 
 async def close_database() -> None:
