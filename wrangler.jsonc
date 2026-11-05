@@ -14,7 +14,7 @@
     "RETENTION_HOURS": "24",
     "ALLOWED_MEDIA_HOSTS": "youtube.com,youtu.be,instagram.com,tiktok.com,x.com,twitter.com,facebook.com,pinterest.com,reddit.com,soundcloud.com"
   },
-  "d1_databases": [{ "binding": "DB", "database_name": "ghaem-downloader", "database_id": "REPLACE_WITH_D1_DATABASE_ID", "migrations_dir": "migrations" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "ghaem-downloader", "database_id": "411b4acb-291b-4a29-99c4-b652cdd244e9", "migrations_dir": "migrations" }],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "ghaem-downloader-temp" }],
   "queues": {
     "producers": [{ "binding": "TASK_QUEUE", "queue": "ghaem-download-tasks" }],
