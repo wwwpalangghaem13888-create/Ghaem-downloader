@@ -1,6 +1,7 @@
 import asyncio
 import secrets
 from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,9 +30,9 @@ class TaskRead(BaseModel):
     telegram_user_id: int | None
     title: str | None
     error: str | None
-    created_at: object
-    updated_at: object
-    completed_at: object | None
+    created_at: datetime
+    updated_at: datetime
+    completed_at: datetime | None
 
 async def get_session():
     async with SessionLocal() as session:
